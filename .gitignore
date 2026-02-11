@@ -1,2 +1,7 @@
-.env
 node_modules
+.env
+dist
+build
+.vscode
+/generated/prisma
+.vercel
