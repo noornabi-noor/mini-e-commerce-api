@@ -1,3 +1,4 @@
+import { OrderStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 type PlaceOrderInput = {
@@ -86,6 +87,65 @@ const placeOrder = async (userId: string, data: PlaceOrderInput) => {
   return order;
 };
 
+const payOrder = async (orderId: string, userId: string) => {
+  const order = await prisma.order.findUniqueOrThrow({
+    where: { id: orderId },
+  });
+
+  if (order.userId !== userId) throw new Error("Not allowed to pay for this order");
+
+  if (order.paymentStatus === "PAID") throw new Error("Order already paid");
+
+  // payment success
+  return await prisma.order.update({
+    where: { id: orderId },
+    data: { paymentStatus: "PAID" },
+  });
+};
+
+const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
+  if (!["SHIPPED", "DELIVERED", "CANCELLED"].includes(status)) {
+    throw new Error("Invalid status");
+  }
+
+  return await prisma.order.update({
+    where: { id: orderId },
+    data: { status },
+  });
+};
+
+const cancelOrder = async (orderId: string, userId: string) => {
+  const order = await prisma.order.findUniqueOrThrow({ where: { id: orderId } });
+
+  if (order.userId !== userId) throw new Error("Cannot cancel another user's order");
+  if (order.status !== "PENDING") throw new Error("Only pending orders can be cancelled");
+
+  if (order.cancellationCount >= 3) {
+    throw new Error("Order cancellation limit reached");
+  }
+
+  // increment cancellation count
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { status: "CANCELLED", cancellationCount: order.cancellationCount + 1 },
+  });
+
+  // restore stock of products
+  const items = await prisma.orderItem.findMany({ where: { orderId } });
+  for (const item of items) {
+    await prisma.product.update({
+      where: { id: item.productId },
+      data: { stock: { increment: item.quantity } },
+    });
+  }
+
+  return { message: "Order cancelled" };
+};
+
+
 export const ordersServices = {
   placeOrder,
+  payOrder,
+  updateOrderStatus,
+  cancelOrder
 };

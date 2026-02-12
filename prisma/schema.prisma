@@ -25,6 +25,12 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
 model Product {
   id          String   @id @default(uuid())
   name        String
@@ -70,6 +76,8 @@ model Order {
   userId    String
   total     Float
   status    OrderStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  cancellationCount  Int         @default(0)
   createdAt DateTime    @default(now())
   updatedAt    DateTime @updatedAt
 
