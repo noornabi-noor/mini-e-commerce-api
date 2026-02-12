@@ -98,6 +98,7 @@ model User {
   email         String
   emailVerified Boolean   @default(false)
   image         String?
+  role          Role      @default(CUSTOMER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
