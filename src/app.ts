@@ -16,9 +16,9 @@ app.use(cors());
 // better auth 
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
-app.use("/api/orders", orderRoutes);
-app.use("/api/cart", cartRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.get("", (req : Request, res: Response)=>{
     res.send("Hello world!");

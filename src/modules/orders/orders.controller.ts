@@ -4,8 +4,9 @@ import { ordersServices } from "./orders.services";
 const createOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id; // from auth middleware
+    const productIds: string[] = req.body.productIds || []; 
 
-    const order = await ordersServices.placeOrder(userId);
+    const order = await ordersServices.placeOrder(userId, { productIds });
 
     res.status(201).json({
       success: true,

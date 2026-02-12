@@ -76,21 +76,30 @@ const addToCart = async (userId: string, data: AddToCartInput) => {
 };
 
 const removeFromCart = async (userId: string, productId: string) => {
-    // check user exist or not
-  const cart = await prisma.cart.findUniqueOrThrow({
+  // get user's cart
+  const cart = await prisma.cart.findUnique({
     where: { userId },
   });
 
-  // then give permission to delete product from cart
+  if (!cart) {
+    throw new Error("Cart not found for user");
+  }
+
+  // xheck if item exists
+  const cartItem = await prisma.cartItem.findUnique({
+    where: { cartId_productId: { cartId: cart.id, productId } },
+  });
+
+  if (!cartItem) {
+    throw new Error("Product not found in cart");
+  }
+
+  // delete from cart
   return await prisma.cartItem.delete({
-    where: {
-      cartId_productId: {
-        cartId: cart.id,
-        productId,
-      },
-    },
+    where: { id: cartItem.id }, 
   });
 };
+
 
 // get own cart item
 const getCart = async (userId: string) => {

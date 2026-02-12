@@ -4,7 +4,7 @@ import { cartServices } from "./cart.services";
 
 const addToCart = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id; // from auth middleware
+    const userId = req.user!.id; // from auth middleware
 
     const item = await cartServices.addToCart(userId as string, req.body);
 
@@ -23,7 +23,7 @@ const addToCart = async (req: Request, res: Response) => {
 
 const removeFromCart = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user!.id;
     const { productId } = req.params;
 
     await cartServices.removeFromCart(userId as string, productId as string);
@@ -42,7 +42,7 @@ const removeFromCart = async (req: Request, res: Response) => {
 
 const getCart = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user!.id;
 
     const cart = await cartServices.getCart(userId as string);
 
