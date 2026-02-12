@@ -111,6 +111,18 @@ http://localhost:5000
 ```
 --- 
 
+## 🗂️ Database Schema
+
+Here is the ER diagram for the Mini E-Commerce API:
+
+![Database Schema](https://i.ibb.co.com/v463GD7j/e-commerce.png)
+
+The full ER diagram for the Mini E-Commerce API can be viewed online at DrawSQL:
+
+[View Database Schema on DrawSQL](https://drawsql.app/teams/myself-668/diagrams/mini-e-commerce-api)
+
+---
+
 ### 🔐 Authentication & Authorization
 
 - Authentication handled via **Better Auth** (secure session management)
